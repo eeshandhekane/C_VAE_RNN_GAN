@@ -1,0 +1,691 @@
+# Some notes on Slice
+# >>> arr = np.array([[[1, 2, 3, 4], [5, 6, 7, 8]], [[9, 10, 11, 12], [13, 14, 15, 16]], [[17, 18, 19, 20], [21, 22, 23, 24]]])
+# >>> x = tf.placeholder(tf.float32, [3, None, 4])
+# >>> arr.shape
+# (3, 2, 4)
+# >>> noise = np.random.random([3, 1, 4])
+# >>> nise
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+# NameError: name 'nise' is not defined
+# >>> noise
+# array([[[ 0.9535437 ,  0.67101358,  0.09602831,  0.14877273]],
+
+#        [[ 0.21308508,  0.1654345 ,  0.47830108,  0.58800754]],
+
+#        [[ 0.81695665,  0.71480101,  0.58463596,  0.64575902]]])
+# >>> y1 = tf.concat([noise, x], axis = 1)
+# >>> noise2 = np.random.random([3, 1, 4])
+# >>> y2 = tf.concat([noise2, y1], axis = 1)
+# >>> sess = tf.Session()
+# 2017-11-01 15:54:31.214258: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+# 2017-11-01 15:54:31.214289: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
+# 2017-11-01 15:54:31.214298: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX2 instructions, but these are available on your machine and could speed up CPU computations.
+# 2017-11-01 15:54:31.214306: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use FMA instructions, but these are available on your machine and could speed up CPU computations.
+# >>> y2_ = sess.run(y2, {x : arr})
+# >>> y2_
+# array([[[  0.9698633 ,   0.05203771,   0.41610715,   0.29747975],
+#         [  0.95354372,   0.67101359,   0.09602831,   0.14877273],
+#         [  1.        ,   2.        ,   3.        ,   4.        ],
+#         [  5.        ,   6.        ,   7.        ,   8.        ]],
+
+#        [[  0.370581  ,   0.6378836 ,   0.97492445,   0.6332643 ],
+#         [  0.21308509,   0.16543449,   0.47830108,   0.58800757],
+#         [  9.        ,  10.        ,  11.        ,  12.        ],
+#         [ 13.        ,  14.        ,  15.        ,  16.        ]],
+
+#        [[  0.45852908,   0.35647139,   0.46181953,   0.33621424],
+#         [  0.81695664,   0.71480101,   0.58463597,   0.64575905],
+#         [ 17.        ,  18.        ,  19.        ,  20.        ],
+#         [ 21.        ,  22.        ,  23.        ,  24.        ]]], dtype=float32)
+# >>> y2.shape
+# TensorShape([Dimension(3), Dimension(None), Dimension(4)])
+# >>> y2_.shape
+# (3, 4, 4)
+# >>> y3 = tf.slice(y2, [0, 1, 0], [3, 3, 4])
+# >>> y3_ = sess.run(y3, {x : arr})
+# >>> y3_
+# array([[[  0.95354372,   0.67101359,   0.09602831,   0.14877273],
+#         [  1.        ,   2.        ,   3.        ,   4.        ],
+#         [  5.        ,   6.        ,   7.        ,   8.        ]],
+
+#        [[  0.21308509,   0.16543449,   0.47830108,   0.58800757],
+#         [  9.        ,  10.        ,  11.        ,  12.        ],
+#         [ 13.        ,  14.        ,  15.        ,  16.        ]],
+
+#        [[  0.81695664,   0.71480101,   0.58463597,   0.64575905],
+#         [ 17.        ,  18.        ,  19.        ,  20.        ],
+#         [ 21.        ,  22.        ,  23.        ,  24.        ]]], dtype=float32)
+# >>> y3 = tf.slice(y2, [0, 1, 0], [3, 1, 4])
+# >>> y3_ = sess.run(y3, {x : arr})
+# >>> y3_
+# array([[[ 0.95354372,  0.67101359,  0.09602831,  0.14877273]],
+
+#        [[ 0.21308509,  0.16543449,  0.47830108,  0.58800757]],
+
+#        [[ 0.81695664,  0.71480101,  0.58463597,  0.64575905]]], dtype=float32)
+# >>> y3 = tf.slice(y2, [0, 1, 0], [3, 2, 4])
+# >>> y3_ = sess.run(y3, {x : arr})
+# >>> y3_
+# array([[[  0.95354372,   0.67101359,   0.09602831,   0.14877273],
+#         [  1.        ,   2.        ,   3.        ,   4.        ]],
+
+#        [[  0.21308509,   0.16543449,   0.47830108,   0.58800757],
+#         [  9.        ,  10.        ,  11.        ,  12.        ]],
+
+#        [[  0.81695664,   0.71480101,   0.58463597,   0.64575905],
+#         [ 17.        ,  18.        ,  19.        ,  20.        ]]], dtype=float32)
+# >>> y3 = tf.slice(y2, [0, 1, 0], [3, 1, 4])
+# >>> y3_ = sess.run(y3, {x : arr})
+# >>> y3_
+# array([[[ 0.95354372,  0.67101359,  0.09602831,  0.14877273]],
+
+#        [[ 0.21308509,  0.16543449,  0.47830108,  0.58800757]],
+
+#        [[ 0.81695664,  0.71480101,  0.58463597,  0.64575905]]], dtype=float32)
+
+
+
+>>> arr = np.array([[[1, 2, 3, 4], [5, 6, 7, 8]], [[9, 10, 11, 12], [13, 14, 15, 16]], [[17, 18, 19, 20], [21, 22, 23, 24]]])
+>>> x = tf.placeholder(tf.float32, [3, None, 4])
+>>> arr.shape
+(3, 2, 4)
+>>> noise = np.random.random([3, 1, 4])
+>>> nise
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'nise' is not defined
+>>> noise
+array([[[ 0.9535437 ,  0.67101358,  0.09602831,  0.14877273]],
+
+       [[ 0.21308508,  0.1654345 ,  0.47830108,  0.58800754]],
+
+       [[ 0.81695665,  0.71480101,  0.58463596,  0.64575902]]])
+>>> y1 = tf.concat([noise, x], axis = 1)
+>>> noise2 = np.random.random([3, 1, 4])
+>>> y2 = tf.concat([noise2, y1], axis = 1)
+>>> sess = tf.Session()
+2017-11-01 15:54:31.214258: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+2017-11-01 15:54:31.214289: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
+2017-11-01 15:54:31.214298: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX2 instructions, but these are available on your machine and could speed up CPU computations.
+2017-11-01 15:54:31.214306: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use FMA instructions, but these are available on your machine and could speed up CPU computations.
+>>> y2_ = sess.run(y2, {x : arr})
+>>> y2_
+array([[[  0.9698633 ,   0.05203771,   0.41610715,   0.29747975],
+        [  0.95354372,   0.67101359,   0.09602831,   0.14877273],
+        [  1.        ,   2.        ,   3.        ,   4.        ],
+        [  5.        ,   6.        ,   7.        ,   8.        ]],
+
+       [[  0.370581  ,   0.6378836 ,   0.97492445,   0.6332643 ],
+        [  0.21308509,   0.16543449,   0.47830108,   0.58800757],
+        [  9.        ,  10.        ,  11.        ,  12.        ],
+        [ 13.        ,  14.        ,  15.        ,  16.        ]],
+
+       [[  0.45852908,   0.35647139,   0.46181953,   0.33621424],
+        [  0.81695664,   0.71480101,   0.58463597,   0.64575905],
+        [ 17.        ,  18.        ,  19.        ,  20.        ],
+        [ 21.        ,  22.        ,  23.        ,  24.        ]]], dtype=float32)
+>>> y2.shape
+TensorShape([Dimension(3), Dimension(None), Dimension(4)])
+>>> y2_.shape
+(3, 4, 4)
+>>> y3 = tf.slice(y2, [0, 1, 0], [3, 3, 4])
+>>> y3_ = sess.run(y3, {x : arr})
+>>> y3_
+array([[[  0.95354372,   0.67101359,   0.09602831,   0.14877273],
+        [  1.        ,   2.        ,   3.        ,   4.        ],
+        [  5.        ,   6.        ,   7.        ,   8.        ]],
+
+       [[  0.21308509,   0.16543449,   0.47830108,   0.58800757],
+        [  9.        ,  10.        ,  11.        ,  12.        ],
+        [ 13.        ,  14.        ,  15.        ,  16.        ]],
+
+       [[  0.81695664,   0.71480101,   0.58463597,   0.64575905],
+        [ 17.        ,  18.        ,  19.        ,  20.        ],
+        [ 21.        ,  22.        ,  23.        ,  24.        ]]], dtype=float32)
+>>> y3 = tf.slice(y2, [0, 1, 0], [3, 1, 4])
+>>> y3_ = sess.run(y3, {x : arr})
+>>> y3_
+array([[[ 0.95354372,  0.67101359,  0.09602831,  0.14877273]],
+
+       [[ 0.21308509,  0.16543449,  0.47830108,  0.58800757]],
+
+       [[ 0.81695664,  0.71480101,  0.58463597,  0.64575905]]], dtype=float32)
+>>> y3 = tf.slice(y2, [0, 1, 0], [3, 2, 4])
+>>> y3_ = sess.run(y3, {x : arr})
+>>> y3_
+array([[[  0.95354372,   0.67101359,   0.09602831,   0.14877273],
+        [  1.        ,   2.        ,   3.        ,   4.        ]],
+
+       [[  0.21308509,   0.16543449,   0.47830108,   0.58800757],
+        [  9.        ,  10.        ,  11.        ,  12.        ]],
+
+       [[  0.81695664,   0.71480101,   0.58463597,   0.64575905],
+        [ 17.        ,  18.        ,  19.        ,  20.        ]]], dtype=float32)
+>>> y3 = tf.slice(y2, [0, 1, 0], [3, 1, 4])
+>>> y3_ = sess.run(y3, {x : arr})
+>>> y3_
+array([[[ 0.95354372,  0.67101359,  0.09602831,  0.14877273]],
+
+       [[ 0.21308509,  0.16543449,  0.47830108,  0.58800757]],
+
+       [[ 0.81695664,  0.71480101,  0.58463597,  0.64575905]]], dtype=float32)
+>>> 
+
+
+# # Some notes on Tensor Reshaping
+# >>> x = tf.placeholder(tf.float32, [3, 2, 4])
+# >>> arr = np.array([[[1, 2, 3, 4], [5, 6, 7, 8]], [[9, 10, 11, 12], [13, 14, 15, 16]], [[17, 18, 19, 20], [21, 22, 23, 25]]])
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+# NameError: name 'np' is not defined
+# >>> import numpy as np
+# >>> arr = np.array([[[1, 2, 3, 4], [5, 6, 7, 8]], [[9, 10, 11, 12], [13, 14, 15, 16]], [[17, 18, 19, 20], [21, 22, 23, 25]]])
+# >>> arr = np.array([[[1, 2, 3, 4], [5, 6, 7, 8]], [[9, 10, 11, 12], [13, 14, 15, 16]], [[17, 18, 19, 20], [21, 22, 23, 24]]])
+# >>> arr.shape
+# (3, 2, 4)
+# >>> out = tf.slice(x, [1, 0, 0], [1, 0, 0])
+# >>> out_ = sess.run(out, feed_dict = {x : arr})
+# >>> out_
+# array([], shape=(1, 0, 0), dtype=float32)
+# >>> out = tf.slice(x, [1, 0, 0], [1, 0, 1])
+# >>> out_ = sess.run(out, feed_dict = {x : arr})
+# >>> out_
+# array([], shape=(1, 0, 1), dtype=float32)
+# >>> out = tf.slice(x, [1, 0, 0], [1, 1, 0])
+# >>> out_ = sess.run(out, feed_dict = {x : arr})
+# >>> out_
+# array([], shape=(1, 1, 0), dtype=float32)
+# >>> out = tf.slice(x, [1, 0, 0], [1, 1, 3])
+# >>> out_ = sess.run(out, feed_dict = {x : arr})
+# >>> out_
+# array([[[  9.,  10.,  11.]]], dtype=float32)
+# >>> out_.shape
+# (1, 1, 3)
+# >>> out = tf.slice(x, [0, 1, 0], [3, 1, 4])
+# >>> out_ = sess.run(out, feed_dict = {x : arr})
+# >>> out_
+# array([[[  5.,   6.,   7.,   8.]],
+
+#        [[ 13.,  14.,  15.,  16.]],
+
+#        [[ 21.,  22.,  23.,  24.]]], dtype=float32)
+# >>> out_.shape
+# (3, 1, 4)
+# >>> out = tf.slice(x, [0, 1, 0], [3, 1, 4])
+# >>> out1 = tf.reshape(out, [3, 4])
+# >>> out1_ = sess.run(out1, feed_dict = {x : arr})
+# >>> out1_
+# array([[  5.,   6.,   7.,   8.],
+#        [ 13.,  14.,  15.,  16.],
+#        [ 21.,  22.,  23.,  24.]], dtype=float32)
+# >>> out1_.shape
+# (3, 4)
+# >>> 
+
+
+# Some notes on np.reshape, which behaves similar to tf.reshape
+# >>> import tensorflow as tf
+# >>> import numpy as np
+# >>> arr = np.array([[[1, 2, 3, 4], [5, 6, 7, 8]], [[9, 10, 11, 12], [13, 14, 15, 16]], [[17, 18, 19, 20], [21, 22, 23, 25]]])
+# >>> arr.shape
+# (3, 2, 4)
+# >>> X = tf.placeholder(tf.float32, [3, 2, 4])
+# >>> Z = np.array([[25, 26, 27, 28], [29, 30, 31, 32]])
+# >>> Y = tf.concat([X, Z], 0)
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/ops/array_ops.py", line 1066, in concat
+#     name=name)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/ops/gen_array_ops.py", line 493, in _concat_v2
+#     name=name)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/op_def_library.py", line 767, in apply_op
+#     op_def=op_def)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 2632, in create_op
+#     set_shapes_for_outputs(ret)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 1911, in set_shapes_for_outputs
+#     shapes = shape_func(op)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 1861, in call_with_requiring
+#     return call_cpp_shape_fn(op, require_shape_fn=True)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/common_shapes.py", line 595, in call_cpp_shape_fn
+#     require_shape_fn)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/common_shapes.py", line 659, in _call_cpp_shape_fn_impl
+#     raise ValueError(err.message)
+# ValueError: Shape must be rank 3 but is rank 2 for 'concat' (op: 'ConcatV2') with input shapes: [3,2,4], [2,4], [].
+# >>> Z = np.array([[25, 26, 27, 28], [29, 30, 31, 32]])
+# >>> Z = np.reshape(Z, [1, 2, 4])
+# >>> Y = tf.concat([X, Z], 0)
+# >>> sess = tf.Session()
+# 2017-10-31 15:19:57.052641: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+# 2017-10-31 15:19:57.052672: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
+# 2017-10-31 15:19:57.052681: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX2 instructions, but these are available on your machine and could speed up CPU computations.
+# 2017-10-31 15:19:57.052690: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use FMA instructions, but these are available on your machine and could speed up CPU computations.
+# >>> Y_ = sess.run(Y, feed_dict = { X : arr } )
+# >>> Y_
+# array([[[  1.,   2.,   3.,   4.],
+#         [  5.,   6.,   7.,   8.]],
+
+#        [[  9.,  10.,  11.,  12.],
+#         [ 13.,  14.,  15.,  16.]],
+
+#        [[ 17.,  18.,  19.,  20.],
+#         [ 21.,  22.,  23.,  25.]],
+
+#        [[ 25.,  26.,  27.,  28.],
+#         [ 29.,  30.,  31.,  32.]]], dtype=float32)
+# >>> Y_.shape
+# (4, 2, 4)
+# >>> Y_
+# array([[[  1.,   2.,   3.,   4.],
+#         [  5.,   6.,   7.,   8.]],
+
+#        [[  9.,  10.,  11.,  12.],
+#         [ 13.,  14.,  15.,  16.]],
+
+#        [[ 17.,  18.,  19.,  20.],
+#         [ 21.,  22.,  23.,  25.]],
+
+#        [[ 25.,  26.,  27.,  28.],
+#         [ 29.,  30.,  31.,  32.]]], dtype=float32)
+# >>> Y__ = np.reshape(Y_, [2, 2, 2, 4])
+# >>> Y__
+# array([[[[  1.,   2.,   3.,   4.],
+#          [  5.,   6.,   7.,   8.]],
+
+#         [[  9.,  10.,  11.,  12.],
+#          [ 13.,  14.,  15.,  16.]]],
+
+
+#        [[[ 17.,  18.,  19.,  20.],
+#          [ 21.,  22.,  23.,  25.]],
+
+#         [[ 25.,  26.,  27.,  28.],
+#          [ 29.,  30.,  31.,  32.]]]], dtype=float32)
+# >>> Y___ = np.reshape(Y__, [1, 4, 2, 4])
+# >>> Y___
+# array([[[[  1.,   2.,   3.,   4.],
+#          [  5.,   6.,   7.,   8.]],
+
+#         [[  9.,  10.,  11.,  12.],
+#          [ 13.,  14.,  15.,  16.]],
+
+#         [[ 17.,  18.,  19.,  20.],
+#          [ 21.,  22.,  23.,  25.]],
+
+#         [[ 25.,  26.,  27.,  28.],
+#          [ 29.,  30.,  31.,  32.]]]], dtype=float32)
+# >>> Y1 = np.array([[1, 2, 3], [4, 5, 6]])
+# >>> Y1.shape
+# (2, 3)
+# >>> Y2 = np.reshape(Y1, [2, 3, 1])
+# >>> Y2
+# array([[[1],
+#         [2],
+#         [3]],
+
+#        [[4],
+#         [5],
+#         [6]]])
+# >>> Y2.shape
+# (2, 3, 1)
+# >>> Y2[0]
+# array([[1],
+#        [2],
+#        [3]])
+# >>> Y3 = np.reshape(Y1, [1, 2, 3])
+# >>> Y3
+# array([[[1, 2, 3],
+#         [4, 5, 6]]])
+# >>> Y3[0]
+# array([[1, 2, 3],
+#        [4, 5, 6]])
+# >>> Y4 = np.reshape(Y3, [1, 2, 3, 1])
+# >>> Y
+# <tf.Tensor 'concat_1:0' shape=(4, 2, 4) dtype=float32>
+# >>> Y4
+# array([[[[1],
+#          [2],
+#          [3]],
+
+#         [[4],
+#          [5],
+#          [6]]]])
+# >>> Y4[0]
+# array([[[1],
+#         [2],
+#         [3]],
+
+#        [[4],
+#         [5],
+#         [6]]])
+# >>> Y4[0][0]
+# array([[1],
+#        [2],
+#        [3]])
+# >>> 
+
+
+# More importantly,
+# >>> Y_
+# array([[[  1.,   2.,   3.,   4.],
+#         [  5.,   6.,   7.,   8.]],
+
+#        [[  9.,  10.,  11.,  12.],
+#         [ 13.,  14.,  15.,  16.]],
+
+#        [[ 17.,  18.,  19.,  20.],
+#         [ 21.,  22.,  23.,  25.]],
+
+#        [[ 25.,  26.,  27.,  28.],
+#         [ 29.,  30.,  31.,  32.]]], dtype=float32)
+# >>> Y_.shape
+# (4, 2, 4)
+# >>> Y_[0]
+# array([[ 1.,  2.,  3.,  4.],
+#        [ 5.,  6.,  7.,  8.]], dtype=float32)
+# >>> Yy = np.reshape(Y_, [2, 2, 2, 4])
+# >>> Yy[0][0]
+# array([[ 1.,  2.,  3.,  4.],
+#        [ 5.,  6.,  7.,  8.]], dtype=float32)
+# >>> Yy[0][1]
+# array([[  9.,  10.,  11.,  12.],
+#        [ 13.,  14.,  15.,  16.]], dtype=float32)
+# >>> Yy[1][0]
+# array([[ 17.,  18.,  19.,  20.],
+#        [ 21.,  22.,  23.,  25.]], dtype=float32)
+# >>> Yy[1][1]
+# array([[ 25.,  26.,  27.,  28.],
+#        [ 29.,  30.,  31.,  32.]], dtype=float32)
+# >>> Yyy = np.reshape(Yy, [4, 2, 4])
+# >>> Yyy
+# array([[[  1.,   2.,   3.,   4.],
+#         [  5.,   6.,   7.,   8.]],
+
+#        [[  9.,  10.,  11.,  12.],
+#         [ 13.,  14.,  15.,  16.]],
+
+#        [[ 17.,  18.,  19.,  20.],
+#         [ 21.,  22.,  23.,  25.]],
+
+#        [[ 25.,  26.,  27.,  28.],
+#         [ 29.,  30.,  31.,  32.]]], dtype=float32)
+# >>> 
+
+
+# Dimension-wise concat in tf
+# >>> import tensorflow as tf
+# >>> import numpy as np
+# >>> x = tf.placeholder(tf.float32, [3, 2, 4])
+# >>> arr = np.array([[[1, 2, 3, 4], [5, 6, 7, 8]], [[9, 10, 11, 12], [13, 14, 15, 16]], [[17, 18, 19, 20], [21, 22, 23, 24]]])
+# >>> arr.shape
+# (3, 2, 4)
+# >>> noise = np.array(np.zeros([3, 1, 4]))
+# >>> noise
+# array([[[ 0.,  0.,  0.,  0.]],
+
+#        [[ 0.,  0.,  0.,  0.]],
+
+#        [[ 0.,  0.,  0.,  0.]]])
+# >>> noise.shape
+# (3, 1, 4)
+# >>> y = tf.concat([noise, x], axis = 1)
+# >>> sess = tf.Session()
+# 2017-11-01 12:44:06.912366: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+# 2017-11-01 12:44:06.912399: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
+# 2017-11-01 12:44:06.912409: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX2 instructions, but these are available on your machine and could speed up CPU computations.
+# 2017-11-01 12:44:06.912417: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use FMA instructions, but these are available on your machine and could speed up CPU computations.
+# >>> y_ = sess.run(y, feed_dict = { x : arr })
+# >>> y_
+# array([[[  0.,   0.,   0.,   0.],
+#         [  1.,   2.,   3.,   4.],
+#         [  5.,   6.,   7.,   8.]],
+
+#        [[  0.,   0.,   0.,   0.],
+#         [  9.,  10.,  11.,  12.],
+#         [ 13.,  14.,  15.,  16.]],
+
+#        [[  0.,   0.,   0.,   0.],
+#         [ 17.,  18.,  19.,  20.],
+#         [ 21.,  22.,  23.,  24.]]], dtype=float32)
+# >>> y_.shape
+# (3, 3, 4)
+# >>> y__ = sess.run(y, feed_dict = { x : y_ })
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 895, in run
+#     run_metadata_ptr)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 1100, in _run
+#     % (np_val.shape, subfeed_t.name, str(subfeed_t.get_shape())))
+# ValueError: Cannot feed value of shape (3, 3, 4) for Tensor u'Placeholder:0', which has shape '(3, 2, 4)'
+# >>> x = tf.placeholder(tf.float32, [3, None, 4])
+# >>> y = tf.concat([noise, x], axis = 1)
+# >>> y_ = sess.run(y, feed_dict = { x : arr })
+# >>> y__ = sess.run(y, feed_dict = { x : y_ })
+# >>> y_
+# array([[[  0.,   0.,   0.,   0.],
+#         [  1.,   2.,   3.,   4.],
+#         [  5.,   6.,   7.,   8.]],
+
+#        [[  0.,   0.,   0.,   0.],
+#         [  9.,  10.,  11.,  12.],
+#         [ 13.,  14.,  15.,  16.]],
+
+#        [[  0.,   0.,   0.,   0.],
+#         [ 17.,  18.,  19.,  20.],
+#         [ 21.,  22.,  23.,  24.]]], dtype=float32)
+# >>> y__
+# array([[[  0.,   0.,   0.,   0.],
+#         [  0.,   0.,   0.,   0.],
+#         [  1.,   2.,   3.,   4.],
+#         [  5.,   6.,   7.,   8.]],
+
+#        [[  0.,   0.,   0.,   0.],
+#         [  0.,   0.,   0.,   0.],
+#         [  9.,  10.,  11.,  12.],
+#         [ 13.,  14.,  15.,  16.]],
+
+#        [[  0.,   0.,   0.,   0.],
+#         [  0.,   0.,   0.,   0.],
+#         [ 17.,  18.,  19.,  20.],
+#         [ 21.,  22.,  23.,  24.]]], dtype=float32)
+# >>> y_shape
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+# NameError: name 'y_shape' is not defined
+# >>> y_.shape
+# (3, 3, 4)
+# >>> y__.shape
+# (3, 4, 4)
+# >>> 
+
+
+# Some notes on tf.gather_nd
+# >>> y_
+# array([[[  0.,   0.,   0.,   0.],
+#         [  1.,   2.,   3.,   4.],
+#         [  5.,   6.,   7.,   8.]],
+
+#        [[  0.,   0.,   0.,   0.],
+#         [  9.,  10.,  11.,  12.],
+#         [ 13.,  14.,  15.,  16.]],
+
+#        [[  0.,   0.,   0.,   0.],
+#         [ 17.,  18.,  19.,  20.],
+#         [ 21.,  22.,  23.,  24.]]], dtype=float32)
+# >>> w_
+# array([[  5.,   6.,   7.,   8.],
+#        [ 13.,  14.,  15.,  16.],
+#        [ 21.,  22.,  23.,  24.]], dtype=float32)
+# >>> xShape = tf.shape(x)
+# >>> last = xShape[1]
+# >>> lst
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+# NameError: name 'lst' is not defined
+# >>> lsst
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+# NameError: name 'lsst' is not defined
+# >>> last
+# <tf.Tensor 'strided_slice_6:0' shape=() dtype=int32>
+# >>> x
+# <tf.Tensor 'Placeholder_1:0' shape=(3, ?, 4) dtype=float32>
+# >>> xShape = tf.shape(x)
+# >>> all_batches = tf.range(xShape)
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/ops/math_ops.py", line 1205, in range
+#     return gen_math_ops._range(start, limit, delta, name=name)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/ops/gen_math_ops.py", line 1782, in _range
+#     delta=delta, name=name)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/op_def_library.py", line 767, in apply_op
+#     op_def=op_def)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 2632, in create_op
+#     set_shapes_for_outputs(ret)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 1911, in set_shapes_for_outputs
+#     shapes = shape_func(op)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 1861, in call_with_requiring
+#     return call_cpp_shape_fn(op, require_shape_fn=True)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/common_shapes.py", line 595, in call_cpp_shape_fn
+#     require_shape_fn)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/common_shapes.py", line 659, in _call_cpp_shape_fn_impl
+#     raise ValueError(err.message)
+# ValueError: Shape must be rank 0 but is rank 1
+# 	 for 'limit' for 'range' (op: 'Range') with input shapes: [], [3], [].
+# >>> all_batches = tf.range(xShape[0])
+# >>> all_batches_ = sess.run(all_batches, {x : y_})
+# >>> all_batches_
+# array([0, 1, 2], dtype=int32)
+# >>> all_batches_last = tf.fill([xShape[0]], xShape[1])
+# >>> all_batches_last_ = sess.run(all_batches_last, {x : y_})
+# >>> all_batches_last_
+# array([3, 3, 3], dtype=int32)
+# >>> all_batches_last = tf.fill([xShape[0]], xShape[1] - 1)
+# >>> all_batches_last_ = sess.run(all_batches_last, {x : y_})
+# >>> all_batches_last_
+# array([2, 2, 2], dtype=int32)
+# >>> indices_list = tf.stack([all_batches, all_batches_last], axis = 1)
+# >>> indices_list_ = sess.run(indices_list, {x : y_})
+# >>> indices_list_
+# array([[0, 2],
+#        [1, 2],
+#        [2, 2]], dtype=int32)
+# >>> indices_list_.shape
+# (3, 2)
+# >>> 
+# >>> indices_list_
+# array([[0, 2],
+#        [1, 2],
+#        [2, 2]], dtype=int32)
+# >>> indices_list_.shape
+# (3, 2)
+# >>> y_
+# array([[[  0.,   0.,   0.,   0.],
+#         [  1.,   2.,   3.,   4.],
+#         [  5.,   6.,   7.,   8.]],
+
+#        [[  0.,   0.,   0.,   0.],
+#         [  9.,  10.,  11.,  12.],
+#         [ 13.,  14.,  15.,  16.]],
+
+#        [[  0.,   0.,   0.,   0.],
+#         [ 17.,  18.,  19.,  20.],
+#         [ 21.,  22.,  23.,  24.]]], dtype=float32)
+# >>> my_slice = tf.gather_nd(x, indices_list)
+# >>> my_slice_ = sess.run(my_slice, {x : y_})
+# >>> my_slice_
+# array([[  5.,   6.,   7.,   8.],
+#        [ 13.,  14.,  15.,  16.],
+#        [ 21.,  22.,  23.,  24.]], dtype=float32)
+# >>> my_slice_.shape
+# (3, 4)
+# >>> my_slice_1 = tf.reshape(my_slice, [3, 1, 4])
+# >>> my_slice_1_ = sess.run(my_slice_1, {x : y_})
+# >>> my_slice_1_
+# array([[[  5.,   6.,   7.,   8.]],
+
+#        [[ 13.,  14.,  15.,  16.]],
+
+#        [[ 21.,  22.,  23.,  24.]]], dtype=float32)
+# >>> my_slice_1_.shape
+# (3, 1, 4)
+# >>> my_slice_1_[0][0]
+# array([ 5.,  6.,  7.,  8.], dtype=float32)
+# >>> 
+
+
+# Some more notes on Slices
+# >>> y1 = tf.slice(x, [0, 0, 0], [3, 1, 4])
+# >>> y1_ = sess.run(y1, {x : arr})
+# >>> y1_
+# array([[[  1.,   2.,   3.,   4.]],
+
+#        [[  9.,  10.,  11.,  12.]],
+
+#        [[ 17.,  18.,  19.,  20.]]], dtype=float32)
+# >>> arr
+# array([[[ 1,  2,  3,  4],
+#         [ 5,  6,  7,  8]],
+
+#        [[ 9, 10, 11, 12],
+#         [13, 14, 15, 16]],
+
+#        [[17, 18, 19, 20],
+#         [21, 22, 23, 24]]])
+# >>> y1 = tf.slice(x, [0, 0, 0], [3, 2, 4])
+# >>> y1_ = sess.run(y1, {x : arr})
+# >>> y1_
+# array([[[  1.,   2.,   3.,   4.],
+#         [  5.,   6.,   7.,   8.]],
+
+#        [[  9.,  10.,  11.,  12.],
+#         [ 13.,  14.,  15.,  16.]],
+
+#        [[ 17.,  18.,  19.,  20.],
+#         [ 21.,  22.,  23.,  24.]]], dtype=float32)
+# >>> y1 = tf.slice(x, [0, 1, 0], [3, 2, 4])
+# >>> y1_ = sess.run(y1, {x : arr})
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 895, in run
+#     run_metadata_ptr)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 1124, in _run
+#     feed_dict_tensor, options, run_metadata)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 1321, in _do_run
+#     options, run_metadata)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 1340, in _do_call
+#     raise type(e)(node_def, op, message)
+# tensorflow.python.framework.errors_impl.InvalidArgumentError: Expected size[1] in [0, 1], but got 2
+# 	 [[Node: Slice_8 = Slice[Index=DT_INT32, T=DT_FLOAT, _device="/job:localhost/replica:0/task:0/cpu:0"](_arg_Placeholder_1_0_0, Slice_8/begin, Slice_8/size)]]
+
+# Caused by op u'Slice_8', defined at:
+#   File "<stdin>", line 1, in <module>
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/ops/array_ops.py", line 561, in slice
+#     return gen_array_ops._slice(input_, begin, size, name=name)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/ops/gen_array_ops.py", line 3125, in _slice
+#     name=name)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/op_def_library.py", line 767, in apply_op
+#     op_def=op_def)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 2630, in create_op
+#     original_op=self._default_original_op, op_def=op_def)
+#   File "/Users/eeshan/anaconda/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 1204, in __init__
+#     self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+# InvalidArgumentError (see above for traceback): Expected size[1] in [0, 1], but got 2
+# 	 [[Node: Slice_8 = Slice[Index=DT_INT32, T=DT_FLOAT, _device="/job:localhost/replica:0/task:0/cpu:0"](_arg_Placeholder_1_0_0, Slice_8/begin, Slice_8/size)]]
+
+# >>> y1 = tf.slice(x, [0, 1, 0], [3, 1, 4])
+# >>> y1_ = sess.run(y1, {x : arr})
+# >>> y1_
+# array([[[  5.,   6.,   7.,   8.]],
+
+#        [[ 13.,  14.,  15.,  16.]],
+
+#        [[ 21.,  22.,  23.,  24.]]], dtype=float32)
+# >>> y1 = tf.slice(x, [0, 0, 0], [3, 0, 4])
+# >>> y1_ = sess.run(y1, {x : arr})
+# >>> y1_
+# array([], shape=(3, 0, 4), dtype=float32)
+# >>> y1_
+# array([], shape=(3, 0, 4), dtype=float32)
+# >>> 
